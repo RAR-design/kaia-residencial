@@ -3,337 +3,71 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>KAIA Residencial — Premium Scroll Experience V2</title>
+<title>KAIA Residencial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0b0b0b;
-    --app-height:100vh;
-    --white:#fff;
-    --off:#f4efe6;
-    --accent:#d6b98b;
-    --accent-2:#aeb79c;
-    --soft:rgba(255,255,255,.16);
-    --muted:rgba(255,255,255,.68);
-    --glass:rgba(10,10,10,.50);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,Arial,Helvetica,sans-serif;overflow-x:hidden}
-  body{height:2500vh;overscroll-behavior:none;touch-action:pan-y}
-  .stage{position:sticky;top:0;width:100%;height:var(--app-height);min-height:100svh;overflow:hidden;background:var(--bg)}
-  canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-  .center-fade{position:absolute;inset:0;pointer-events:none;z-index:9;background:radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,.10) 60%, rgba(0,0,0,.28) 100%);opacity:.35}
-  .veil{position:absolute;inset:0;pointer-events:none;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,.06),rgba(0,0,0,0) 56%,rgba(0,0,0,.20))}
-
-  .topbar{position:absolute;left:4vw;right:4vw;top:3.2vh;display:flex;justify-content:space-between;align-items:flex-start;z-index:16}
-  .brandWrap{display:flex;flex-direction:column;gap:5px}
-  .brand{font-size:11px;letter-spacing:.42em;color:var(--accent);text-transform:uppercase}
-  .brandSub{font-size:8px;letter-spacing:.26em;color:rgba(255,255,255,.50);text-transform:uppercase}
-  .count{font-size:9px;letter-spacing:.28em;color:rgba(255,255,255,.78);padding-top:4px}
-  .topbar.on-light .brand{color:#947a56}
-  .topbar.on-light .brandSub{color:rgba(0,0,0,.55)}
-  .topbar.on-light .count{color:rgba(0,0,0,.62)}
-
-  .copy{position:absolute;left:4vw;bottom:5vh;z-index:16;max-width:min(760px,62vw);opacity:0}
-  .kickerLine{width:56px;height:1px;background:linear-gradient(90deg,var(--accent),rgba(255,255,255,0));margin-bottom:10px}
-  .eyebrow{font-size:8px;letter-spacing:.34em;color:var(--accent-2);margin-bottom:8px;text-transform:uppercase}
-  .title{font-family:'Cormorant Garamond', Georgia, serif;font-size:clamp(24px,2.6vw,42px);font-weight:500;letter-spacing:.03em;line-height:.98;color:var(--off)}
-  .tagline{margin-top:10px;font-size:clamp(12px,1.02vw,15px);line-height:1.55;color:rgba(255,255,255,.76);max-width:560px}
-  .hint{position:absolute;right:4vw;bottom:4.6vh;z-index:16;font-size:8px;letter-spacing:.20em;color:rgba(255,255,255,.44);text-transform:uppercase}
-  .hint.on-light{color:rgba(0,0,0,.46)}
-  .rail{position:absolute;right:1.6vw;top:9vh;bottom:9vh;width:1px;background:var(--soft);z-index:16}
-  .bar{position:absolute;left:0;top:0;width:100%;height:0;background:linear-gradient(180deg,var(--accent),var(--off))}
-
-  .portadaBadge{position:absolute;left:4vw;bottom:4.8vh;z-index:15;padding:10px 14px 11px;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.74);backdrop-filter:blur(4px);color:#111;display:flex;flex-direction:column;gap:5px;max-width:min(420px,74vw)}
-  .portadaBadgeOver{font-size:8px;letter-spacing:.30em;color:#8e7b5b;text-transform:uppercase}
-  .portadaBadgeTitle{font-family:'Cormorant Garamond', Georgia, serif;font-size:clamp(22px,2.2vw,34px);line-height:.95;letter-spacing:.04em}
-  .portadaBadgeText{font-size:11px;line-height:1.45;color:rgba(0,0,0,.68)}
-
-  .finalCard{position:absolute;left:50%;bottom:9.5vh;transform:translateX(-50%);width:min(650px,88vw);padding:24px 24px 22px;border:1px solid rgba(214,185,139,.26);background:rgba(9,9,9,.52);backdrop-filter:blur(10px);z-index:17;opacity:0;pointer-events:none}
-  .finalOver{font-size:8px;letter-spacing:.34em;text-transform:uppercase;color:var(--accent-2);margin-bottom:10px;text-align:center}
-  .finalTitle{font-family:'Cormorant Garamond', Georgia, serif;font-size:clamp(28px,3.2vw,50px);font-weight:500;letter-spacing:.12em;text-align:center;color:var(--off)}
-  .finalText{margin:12px auto 0;text-align:center;font-size:14px;line-height:1.58;color:rgba(255,255,255,.78);max-width:520px}
-  .finalActions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
-  .action{border:1px solid rgba(214,185,139,.34);padding:12px 16px;border-radius:999px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--off);background:rgba(255,255,255,.04)}
-  .action.primary{background:linear-gradient(180deg,var(--accent),#c9a977);color:#17130f;border-color:rgba(214,185,139,.65)}
-  .action.secondary{border-color:rgba(174,183,156,.42);color:var(--accent-2)}
-
-  .loading{position:absolute;inset:0;z-index:25;display:flex;align-items:center;justify-content:center;background:#fff;transition:opacity .55s ease}
-  .loading-inner{text-align:center;color:#111}
-  .loading-logo{font-family:'Cormorant Garamond', Georgia, serif;font-size:clamp(48px,6vw,102px);letter-spacing:.16em;font-weight:500}
-  .loading-text{margin-top:12px;font-size:9px;letter-spacing:.25em;opacity:.68}
-
-  @media(max-width:900px){
-    body{height:3200vh}
-    .stage{height:100svh}
-    .rail{display:none}
-    .hint{left:4vw;right:auto;bottom:2.5vh}
-    .copy{max-width:84vw}
-    .finalCard{bottom:7.5vh;padding:18px 16px}
-    .portadaBadge{max-width:82vw}
-  }
+:root{--bg:#0b0b0b;--off:#f4efe6;--accent:#d6b98b;--sage:#aeb79c;--app-height:100vh}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:white;font-family:Inter,Arial,sans-serif;overflow-x:hidden}
+body{height:2500vh;overscroll-behavior:none;touch-action:pan-y}
+.stage{position:fixed;inset:0;width:100%;height:var(--app-height);overflow:hidden;background:var(--bg)}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.veil{position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.05),transparent 58%,rgba(0,0,0,.20))}
+.topbar{position:absolute;left:4vw;right:4vw;top:max(18px,env(safe-area-inset-top));display:flex;justify-content:space-between;z-index:10}
+.brand{font-size:11px;letter-spacing:.40em;color:var(--accent);text-transform:uppercase}
+.brandSub{margin-top:5px;font-size:8px;letter-spacing:.24em;color:rgba(255,255,255,.52);text-transform:uppercase}
+.count{font-size:9px;letter-spacing:.26em;color:rgba(255,255,255,.74);padding-top:3px}
+.topbar.on-light .brand{color:#947a56}.topbar.on-light .brandSub{color:rgba(0,0,0,.55)}.topbar.on-light .count{color:rgba(0,0,0,.60)}
+.copy{position:absolute;left:4vw;bottom:max(32px,calc(env(safe-area-inset-bottom) + 18px));z-index:10;max-width:min(760px,74vw);opacity:1;transform:none!important}
+.kicker{width:54px;height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-bottom:9px}
+.eyebrow{font-size:8px;letter-spacing:.30em;color:var(--sage);margin-bottom:7px;text-transform:uppercase}
+.title{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(23px,2.5vw,40px);font-weight:500;line-height:.98;letter-spacing:.03em;color:var(--off)}
+.tagline{margin-top:9px;font-size:13px;line-height:1.45;color:rgba(255,255,255,.76)}
+.portadaBadge{position:absolute;left:4vw;bottom:max(32px,calc(env(safe-area-inset-bottom) + 18px));z-index:11;padding:10px 14px 11px;background:rgba(255,255,255,.82);backdrop-filter:blur(4px);color:#111;max-width:min(430px,82vw);border:1px solid rgba(0,0,0,.06)}
+.portadaOver{font-size:8px;letter-spacing:.28em;color:#8e7b5b;text-transform:uppercase}
+.portadaTitle{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,2.2vw,34px);line-height:.98;margin-top:4px;letter-spacing:.04em}
+.portadaText{font-size:11px;line-height:1.4;color:rgba(0,0,0,.68);margin-top:5px;text-transform:uppercase;letter-spacing:.08em}
+.hint{position:absolute;right:4vw;bottom:max(32px,calc(env(safe-area-inset-bottom) + 18px));z-index:10;font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.42);text-transform:uppercase}.hint.on-light{color:rgba(0,0,0,.45)}
+.rail{position:absolute;right:1.5vw;top:9vh;bottom:9vh;width:1px;background:rgba(255,255,255,.16);z-index:10}.bar{width:100%;height:0;background:linear-gradient(var(--accent),var(--off))}
+.loading{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#fff;transition:opacity .35s ease}.loadingInner{text-align:center;color:#111}.loadingLogo{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(46px,8vw,100px);letter-spacing:.16em}.loadingText{margin-top:12px;font-size:9px;letter-spacing:.22em;opacity:.64}
+@media(max-width:900px){
+ body{height:2900vh}.rail{display:none}.copy{max-width:86vw}.hint{left:4vw;right:auto;bottom:max(14px,env(safe-area-inset-bottom));font-size:7px}.tagline{font-size:12px}.portadaBadge{max-width:86vw}.brandSub{display:none}
+}
 </style>
 </head>
 <body>
 <section class="stage">
-  <canvas id="canvas"></canvas>
-  <div class="center-fade" id="centerFade"></div>
-  <div class="veil"></div>
-
-  <div class="topbar" id="topbar">
-    <div class="brandWrap">
-      <div class="brand">KAIA</div>
-      <div class="brandSub">Residencial · Presentación interactiva</div>
-    </div>
-    <div class="count" id="count">01 / 06</div>
-  </div>
-
-  <div class="portadaBadge" id="portadaBadge">
-    <div class="portadaBadgeOver">KAIA Residencial</div>
-    <div class="portadaBadgeTitle">NUEVO DESARROLLO EN PUEBLA</div>
-    <div class="portadaBadgeText">Conoce tu nuevo hogar.</div>
-  </div>
-
-  <div class="copy" id="copy">
-    <div class="kickerLine"></div>
-    <div class="eyebrow" id="eyebrow">Scroll Experience</div>
-    <div class="title" id="title">KAIA RESIDENCIAL</div>
-    <div class="tagline" id="tagline">Una experiencia residencial contemporánea.</div>
-  </div>
-
-  <div class="finalCard" id="finalCard">
-    <div class="finalOver">Proyecto residencial</div>
-    <div class="finalTitle">KAIA RESIDENCIAL</div>
-    <div class="finalText">Arquitectura contemporánea, recorridos claros e interiores pensados para vivir con amplitud, calma y elegancia.</div>
-    <div class="finalActions">
-      <div class="action primary">Solicita información</div>
-      <div class="action secondary">Agenda una presentación</div>
-    </div>
-  </div>
-
-  <div class="hint" id="hint">scroll para recorrer ↓</div>
-  <div class="rail"><div class="bar" id="bar"></div></div>
-
-  <div class="loading" id="loading">
-    <div class="loading-inner">
-      <div class="loading-logo">KAIA</div>
-      <div class="loading-text" id="loadingText">PREPARANDO RECORRIDO…</div>
-    </div>
-  </div>
+<canvas id="canvas"></canvas><div class="veil"></div>
+<div class="topbar" id="topbar"><div><div class="brand">KAIA</div><div class="brandSub">Residencial · Puebla</div></div><div class="count" id="count">01 / 06</div></div>
+<div class="portadaBadge" id="portadaBadge"><div class="portadaOver">KAIA RESIDENCIAL</div><div class="portadaTitle">NUEVO DESARROLLO EN PUEBLA</div><div class="portadaText">DESCUBRE TU NUEVO HOGAR.</div></div>
+<div class="copy" id="copy"><div class="kicker"></div><div class="eyebrow" id="eyebrow"></div><div class="title" id="title"></div><div class="tagline" id="tagline"></div></div>
+<div class="hint" id="hint">scroll para recorrer ↓</div><div class="rail"><div class="bar" id="bar"></div></div>
+<div class="loading" id="loading"><div class="loadingInner"><div class="loadingLogo">KAIA</div><div class="loadingText" id="loadingText">PREPARANDO EXPERIENCIA…</div></div></div>
 </section>
-
 <script>
-const scenes = [{"slug": "01_portada", "title": "KAIA RESIDENCIAL", "sub": "SCROLL EXPERIENCE", "tag": "Una experiencia residencial contemporánea.", "weight": 0.95, "count": 141, "fps": 24, "fit": "contain", "bg": "white", "start": 0.0, "end": 0.12666666666666665}, {"slug": "02_exterior_01", "title": "EXTERIOR", "sub": "VISTA DESDE LA CALLE", "tag": "Una llegada limpia, elegante y actual.", "weight": 0.95, "count": 120, "fps": 24, "fit": "cover", "bg": "black", "start": 0.12666666666666665, "end": 0.2533333333333333}, {"slug": "03_exterior_02", "title": "EXTERIOR", "sub": "SEGUNDA VISTA", "tag": "Presencia arquitectónica desde la ciudad.", "weight": 1.0, "count": 144, "fps": 24, "fit": "cover", "bg": "black", "start": 0.2533333333333333, "end": 0.38666666666666666}, {"slug": "04_calle_interior", "title": "RECORRIDO", "sub": "CALLE INTERIOR", "tag": "Un conjunto pensado para conectar espacios y vida cotidiana.", "weight": 2.3, "count": 768, "fps": 24, "fit": "cover", "bg": "black", "start": 0.38666666666666666, "end": 0.6933333333333332}, {"slug": "05_sala", "title": "SALA · COMEDOR", "sub": "INTERIOR DEPARTAMENTO", "tag": "Interiores amplios para compartir, vivir y recibir.", "weight": 1.15, "count": 240, "fps": 24, "fit": "cover", "bg": "black", "start": 0.6933333333333332, "end": 0.8466666666666666}, {"slug": "06_recamara", "title": "RECÁMARA", "sub": "INTERIOR DEPARTAMENTO", "tag": "Calma, luz natural y descanso.", "weight": 1.15, "count": 240, "fps": 24, "fit": "cover", "bg": "black", "start": 0.8466666666666666, "end": 1.0}];
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const titleEl = document.getElementById('title');
-const eyebrowEl = document.getElementById('eyebrow');
-const taglineEl = document.getElementById('tagline');
-const countEl = document.getElementById('count');
-const bar = document.getElementById('bar');
-const topbar = document.getElementById('topbar');
-const hint = document.getElementById('hint');
-const loading = document.getElementById('loading');
-const loadingText = document.getElementById('loadingText');
-const centerFade = document.getElementById('centerFade');
-const finalCard = document.getElementById('finalCard');
-const copy = document.getElementById('copy');
-const portadaBadge = document.getElementById('portadaBadge');
-const isMobile = matchMedia('(pointer: coarse)').matches || innerWidth <= 900;
-const frameRoot = isMobile ? 'frames-mobile' : 'frames';
-const frameExt = isMobile ? 'webp' : 'jpg';
-
-let target = 0;
-let smooth = 0;
-let currentScene = -1;
-let lastDrawnKey = '';
-const cache = new Map();
-const pending = new Set();
-
-function setAppHeight(){
-  const vv = window.visualViewport;
-  const h = Math.round(vv ? vv.height : window.innerHeight);
-  document.documentElement.style.setProperty('--app-height', h + 'px');
-  document.body.style.height = `${Math.round(h * 25)}px`;
-}
-function resizeCanvas(){
-  const vv = window.visualViewport;
-  const viewW = Math.round(vv ? vv.width : window.innerWidth);
-  const viewH = Math.round(vv ? vv.height : window.innerHeight);
-  const dprCap = isMobile ? 1.25 : 2;
-  const dpr = Math.min(devicePixelRatio || 1, dprCap);
-  canvas.width = Math.round(viewW * dpr);
-  canvas.height = Math.round(viewH * dpr);
-  canvas.style.width = viewW + 'px';
-  canvas.style.height = viewH + 'px';
-}
-function refreshViewport(){
-  setAppHeight();
-  resizeCanvas();
-  updateTarget();
-}
-addEventListener('resize', refreshViewport);
-addEventListener('orientationchange', refreshViewport);
-if (window.visualViewport){
-  window.visualViewport.addEventListener('resize', refreshViewport);
-  window.visualViewport.addEventListener('scroll', refreshViewport);
-}
-setAppHeight();
-resizeCanvas();
-
-function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-function mapRange(v,a1,a2,b1,b2){ return b1 + (clamp((v-a1)/(a2-a1),0,1) * (b2-b1)); }
-function scrollProgress(){
-  const max = document.documentElement.scrollHeight - innerHeight;
-  return max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
-}
-function updateTarget(){ target = scrollProgress(); }
-addEventListener('scroll', updateTarget, {passive:true});
-addEventListener('resize', updateTarget);
-
-function sceneIndex(p){
-  for(let i=0;i<scenes.length;i++) if(p <= scenes[i].end) return i;
-  return scenes.length - 1;
-}
-function frameInfo(p){
-  const i = sceneIndex(p);
-  const s = scenes[i];
-  const local = Math.max(0, Math.min(1, (p - s.start) / (s.end - s.start)));
-  const frame = Math.max(1, Math.min(s.count, Math.round(1 + local * (s.count - 1))));
-  return {i, s, frame};
-}
-function frameUrl(s, frame){
-  return `${frameRoot}/${s.slug}/frame_${String(frame).padStart(5,'0')}.${frameExt}`;
-}
-function loadFrame(s, frame){
-  frame = Math.max(1, Math.min(s.count, frame));
-  const key = `${s.slug}:${frame}`;
-  if(cache.has(key) || pending.has(key)) return;
-  pending.add(key);
-  const img = new Image();
-  img.decoding = 'async';
-  img.onload = () => {
-    cache.set(key, img);
-    pending.delete(key);
-    if(cache.size > (isMobile ? 82 : 240)){
-      const first = cache.keys().next().value;
-      cache.delete(first);
-    }
-  };
-  img.onerror = () => pending.delete(key);
-  img.src = frameUrl(s, frame);
-}
-function drawImageMode(img, mode, bg){
-  const cw = canvas.width, ch = canvas.height;
-  const iw = img.naturalWidth, ih = img.naturalHeight;
-  ctx.clearRect(0,0,cw,ch);
-  ctx.fillStyle = bg === 'white' ? '#ffffff' : '#000000';
-  ctx.fillRect(0,0,cw,ch);
-  let scale = mode === 'contain' ? Math.min(cw/iw, ch/ih) : Math.max(cw/iw, ch/ih);
-  const w = iw * scale, h = ih * scale, x = (cw - w) / 2, y = (ch - h) / 2;
-  ctx.drawImage(img, x, y, w, h);
-}
-function updateText(i){
-  if(i === currentScene) return;
-  currentScene = i;
-  const s = scenes[i];
-  titleEl.textContent = s.title;
-  eyebrowEl.textContent = s.sub;
-  taglineEl.textContent = s.tag;
-  countEl.textContent = String(i+1).padStart(2,'0') + ' / ' + String(scenes.length).padStart(2,'0');
-  titleEl.animate([{opacity:.15,transform:'translateY(8px)'},{opacity:1,transform:'translateY(0)'}], {duration:360,easing:'ease-out'});
-  taglineEl.animate([{opacity:.05,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}], {duration:430,easing:'ease-out'});
-}
-function preloadAround(info){
-  const {s, frame} = info;
-  loadFrame(s, frame);
-  const around = isMobile ? 7 : 24;
-  const behind = isMobile ? 3 : around;
-  for(let d=1; d<=around; d++) loadFrame(s, frame+d);
-  for(let d=1; d<=behind; d++) loadFrame(s, frame-d);
-  const idx = scenes.indexOf(s);
-  if(idx + 1 < scenes.length){
-    const nextWarm = isMobile ? 6 : 22;
-    for(let f=1; f<=nextWarm; f++) loadFrame(scenes[idx+1], f);
-  }
-}
-function updateOverlays(p){
-  // Clean portada: only small badge in corner, no big texts over video.
-  const portadaBadgeOpacity = 1 - mapRange(p, 0.07, 0.13, 0, 1);
-  portadaBadge.style.opacity = clamp(portadaBadgeOpacity, 0, 1);
-  portadaBadge.style.transform = `translateY(${mapRange(1-portadaBadgeOpacity,0,1,0,14)}px)`;
-
-  const onLight = p < 0.128;
-  topbar.classList.toggle('on-light', onLight);
-  hint.classList.toggle('on-light', onLight);
-
-  const copyIn = mapRange(p, 0.12, 0.18, 0, 1);
-  const copyOut = p > 0.965 ? mapRange(p,0.965,1,1,0) : 1;
-  const copyOpacity = clamp(copyIn * copyOut, 0, 1);
-  copy.style.opacity = copyOpacity;
-  copy.style.transform = `translateY(${mapRange(1-copyOpacity,0,1,18,0)}px)`;
-
-  const finalOpacity = mapRange(p, 0.90, 0.965, 0, 1);
-  finalCard.style.opacity = clamp(finalOpacity, 0, 1);
-  finalCard.style.transform = `translateX(-50%) translateY(${mapRange(1-finalOpacity,0,1,16,0)}px)`;
-
-  const vignetteOpacity = mapRange(p, 0.0, 0.16, .22, .34) + mapRange(p,0.90,1,0,.08);
-  centerFade.style.opacity = clamp(vignetteOpacity, .16, .42).toFixed(3);
-}
-
-function tick(){
-  smooth += (target - smooth) * (isMobile ? 0.09 : 0.072);
-  if(Math.abs(target - smooth) < 0.000015) smooth = target;
-
-  const info = frameInfo(smooth);
-  updateText(info.i);
-  preloadAround(info);
-
-  const key = `${info.s.slug}:${info.frame}`;
-  const img = cache.get(key);
-  if(img && key !== lastDrawnKey){
-    drawImageMode(img, info.s.fit, info.s.bg);
-    lastDrawnKey = key;
-  }
-
-  updateOverlays(smooth);
-  bar.style.height = (smooth * 100).toFixed(2) + '%';
-  hint.style.opacity = smooth > .02 ? '.22' : '.44';
-
-  requestAnimationFrame(tick);
-}
-
-(function boot(){
-  const first = scenes[0];
-  let ready = 0;
-  const preloadCount = Math.min(isMobile ? 14 : 44, first.count);
-  loadingText.textContent = isMobile ? 'PREPARANDO EXPERIENCIA MÓVIL…' : 'PREPARANDO RECORRIDO…';
-  for(let f=1; f<=preloadCount; f++){
-    const img = new Image();
-    img.decoding = 'async';
-    const key = `${first.slug}:${f}`;
-    img.onload = () => {
-      cache.set(key, img);
-      ready++;
-      loadingText.textContent = `${isMobile ? 'PREPARANDO EXPERIENCIA MÓVIL' : 'PREPARANDO RECORRIDO'}… ${Math.round(ready/preloadCount*100)}%`;
-      if(ready >= Math.min(isMobile ? 6 : 12, preloadCount)){
-        loading.style.opacity = '0';
-        setTimeout(()=>loading.style.display='none',600);
-      }
-    };
-    img.src = frameUrl(first, f);
-  }
-  refreshViewport();
-  tick();
-  setTimeout(()=>{
-    scenes.slice(1).forEach(s=>{
-      const warm = isMobile ? 5 : 26;
-      for(let f=1; f<=warm; f++) loadFrame(s, f);
-    });
-  }, isMobile ? 1300 : 900);
-})();
-</script>
-</body>
-</html>
+const scenes=[{"slug": "01_portada", "title": "KAIA RESIDENCIAL", "sub": "NUEVO DESARROLLO EN PUEBLA", "tag": "DESCUBRE TU NUEVO HOGAR.", "fit": "contain", "bg": "white", "start": 0.0, "end": 0.12666666666666665, "countDesktop": 141, "countMobile": 94}, {"slug": "02_exterior_01", "title": "EXTERIOR", "sub": "VISTA DESDE LA CALLE", "tag": "Una llegada limpia, elegante y actual.", "fit": "cover", "bg": "black", "start": 0.12666666666666665, "end": 0.2533333333333333, "countDesktop": 120, "countMobile": 80}, {"slug": "03_exterior_02", "title": "EXTERIOR", "sub": "SEGUNDA VISTA", "tag": "Presencia arquitectónica desde la ciudad.", "fit": "cover", "bg": "black", "start": 0.2533333333333333, "end": 0.38666666666666666, "countDesktop": 144, "countMobile": 96}, {"slug": "04_calle_interior", "title": "RECORRIDO", "sub": "CALLE INTERIOR", "tag": "Un conjunto pensado para conectar espacios y vida cotidiana.", "fit": "cover", "bg": "black", "start": 0.38666666666666666, "end": 0.6933333333333332, "countDesktop": 768, "countMobile": 512}, {"slug": "05_sala", "title": "SALA · COMEDOR", "sub": "INTERIOR DEPARTAMENTO", "tag": "Interiores amplios para compartir, vivir y recibir.", "fit": "cover", "bg": "black", "start": 0.6933333333333332, "end": 0.8466666666666666, "countDesktop": 240, "countMobile": 160}, {"slug": "06_recamara", "title": "RECÁMARA", "sub": "INTERIOR DEPARTAMENTO", "tag": "Calma, luz natural y descanso.", "fit": "cover", "bg": "black", "start": 0.8466666666666666, "end": 1.0, "countDesktop": 240, "countMobile": 160}];
+const isMobile=matchMedia('(pointer: coarse)').matches||innerWidth<=900;
+const frameRoot=isMobile?'frames-mobile-lite':'frames';
+const frameExt=isMobile?'webp':'jpg';
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+const topbar=document.getElementById('topbar'),countEl=document.getElementById('count'),bar=document.getElementById('bar'),hint=document.getElementById('hint'),copy=document.getElementById('copy'),badge=document.getElementById('portadaBadge'),eyebrow=document.getElementById('eyebrow'),title=document.getElementById('title'),tagline=document.getElementById('tagline'),loading=document.getElementById('loading'),loadingText=document.getElementById('loadingText');
+let target=0,smooth=0,currentScene=-1,lastKey='';const cache=new Map(),pending=new Set();
+function viewSize(){const v=window.visualViewport;return {w:Math.round(v?v.width:innerWidth),h:Math.round(v?v.height:innerHeight)}}
+function setViewport(){const {w,h}=viewSize();document.documentElement.style.setProperty('--app-height',h+'px');const dpr=Math.min(devicePixelRatio||1,isMobile?1:2);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px'}
+function progress(){const max=document.documentElement.scrollHeight-innerHeight;return max>0?Math.max(0,Math.min(1,scrollY/max)):0}
+function updateTarget(){target=progress()}
+addEventListener('scroll',updateTarget,{passive:true});addEventListener('resize',()=>{setViewport();updateTarget()},{passive:true});addEventListener('orientationchange',()=>setTimeout(setViewport,120));if(window.visualViewport)window.visualViewport.addEventListener('resize',setViewport,{passive:true});
+function idxFor(p){for(let i=0;i<scenes.length;i++)if(p<=scenes[i].end)return i;return scenes.length-1}
+function infoFor(p){const i=idxFor(p),s=scenes[i],local=Math.max(0,Math.min(1,(p-s.start)/(s.end-s.start))),count=isMobile?s.countMobile:s.countDesktop,frame=Math.max(1,Math.min(count,Math.round(1+local*(count-1))));return{i,s,frame,count}}
+function url(s,f){return `${frameRoot}/${s.slug}/frame_${String(f).padStart(5,'0')}.${frameExt}`}
+function load(s,f,count){f=Math.max(1,Math.min(count,f));const k=s.slug+':'+f;if(cache.has(k)||pending.has(k))return;pending.add(k);const im=new Image();im.decoding='async';im.onload=()=>{cache.set(k,im);pending.delete(k);const limit=isMobile?56:220;while(cache.size>limit)cache.delete(cache.keys().next().value)};im.onerror=()=>pending.delete(k);im.src=url(s,f)}
+function draw(im,s){const cw=canvas.width,ch=canvas.height,iw=im.naturalWidth,ih=im.naturalHeight;ctx.clearRect(0,0,cw,ch);ctx.fillStyle=s.bg==='white'?'#fff':'#000';ctx.fillRect(0,0,cw,ch);const scale=s.fit==='contain'?Math.min(cw/iw,ch/ih):Math.max(cw/iw,ch/ih),w=iw*scale,h=ih*scale;ctx.drawImage(im,(cw-w)/2,(ch-h)/2,w,h)}
+function updateScene(i){if(i===currentScene)return;currentScene=i;const s=scenes[i];countEl.textContent=String(i+1).padStart(2,'0')+' / '+String(scenes.length).padStart(2,'0');eyebrow.textContent=s.sub;title.textContent=s.title;tagline.textContent=s.tag;/* intentionally no animations */}
+function pre(info){const r=isMobile?8:22;load(info.s,info.frame,info.count);for(let d=1;d<=r;d++){load(info.s,info.frame+d,info.count);load(info.s,info.frame-d,info.count)}if(info.i+1<scenes.length){const n=scenes[info.i+1],cnt=isMobile?n.countMobile:n.countDesktop;for(let f=1;f<=6;f++)load(n,f,cnt)}}
+function overlays(p){const onLight=p<scenes[0].end;topbar.classList.toggle('on-light',onLight);hint.classList.toggle('on-light',onLight);badge.style.display=onLight?'block':'none';copy.style.display=onLight?'none':'block'}
+function tick(){smooth+=(target-smooth)*(isMobile?.11:.075);if(Math.abs(target-smooth)<.00002)smooth=target;const info=infoFor(smooth);updateScene(info.i);pre(info);const k=info.s.slug+':'+info.frame,im=cache.get(k);if(im&&k!==lastKey){draw(im,info.s);lastKey=k}overlays(smooth);bar.style.height=(smooth*100).toFixed(2)+'%';requestAnimationFrame(tick)}
+function boot(){setViewport();updateTarget();const s=scenes[0],cnt=isMobile?s.countMobile:s.countDesktop,n=Math.min(isMobile?12:28,cnt);let ready=0;for(let f=1;f<=n;f++){const im=new Image();im.decoding='async';const k=s.slug+':'+f;im.onload=()=>{cache.set(k,im);ready++;loadingText.textContent='PREPARANDO EXPERIENCIA… '+Math.round(ready/n*100)+'%';if(ready>=Math.min(isMobile?5:10,n)){loading.style.opacity='0';setTimeout(()=>loading.style.display='none',380)}};im.src=url(s,f)}tick()}
+boot();
+</script></body></html>
