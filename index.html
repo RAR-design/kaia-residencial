@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KAIA Residencial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0b;--off:#f4efe6;--accent:#d6b98b;--sage:#aeb79c;--app-height:100vh}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:white;font-family:Inter,Arial,sans-serif;overflow-x:hidden}
+body{height:2500vh;overscroll-behavior:none;touch-action:pan-y}
+.stage{position:fixed;inset:0;width:100%;height:var(--app-height);overflow:hidden;background:var(--bg)}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.veil{position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.05),transparent 58%,rgba(0,0,0,.20))}
+.topbar{position:absolute;left:4vw;right:4vw;top:max(18px,env(safe-area-inset-top));display:flex;justify-content:space-between;z-index:10}
+.brand{font-size:11px;letter-spacing:.40em;color:var(--accent);text-transform:uppercase}
+.brandSub{margin-top:5px;font-size:8px;letter-spacing:.24em;color:rgba(255,255,255,.52);text-transform:uppercase}
+.count{font-size:9px;letter-spacing:.26em;color:rgba(255,255,255,.74);padding-top:3px}
+.topbar.on-light .brand{color:#947a56}.topbar.on-light .brandSub{color:rgba(0,0,0,.55)}.topbar.on-light .count{color:rgba(0,0,0,.60)}
+.copy{position:absolute;left:4vw;bottom:max(32px,calc(env(safe-area-inset-bottom) + 18px));z-index:10;max-width:min(760px,74vw);opacity:1;transform:none!important}
+.kicker{width:54px;height:1px;background:linear-gradient(90deg,var(--accent),transparent);margin-bottom:9px}
+.eyebrow{font-size:8px;letter-spacing:.30em;color:var(--sage);margin-bottom:7px;text-transform:uppercase}
+.title{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(23px,2.5vw,40px);font-weight:500;line-height:.98;letter-spacing:.03em;color:var(--off)}
+.tagline{margin-top:9px;font-size:13px;line-height:1.45;color:rgba(255,255,255,.76)}
+.portadaBadge{position:absolute;left:4vw;bottom:max(32px,calc(env(safe-area-inset-bottom) + 18px));z-index:11;padding:10px 14px 11px;background:rgba(255,255,255,.82);backdrop-filter:blur(4px);color:#111;max-width:min(430px,82vw);border:1px solid rgba(0,0,0,.06)}
+.portadaOver{font-size:8px;letter-spacing:.28em;color:#8e7b5b;text-transform:uppercase}
+.portadaTitle{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,2.2vw,34px);line-height:.98;margin-top:4px;letter-spacing:.04em}
+.portadaText{font-size:11px;line-height:1.4;color:rgba(0,0,0,.68);margin-top:5px;text-transform:uppercase;letter-spacing:.08em}
+.hint{position:absolute;right:4vw;bottom:max(32px,calc(env(safe-area-inset-bottom) + 18px));z-index:10;font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.42);text-transform:uppercase}.hint.on-light{color:rgba(0,0,0,.45)}
+.rail{position:absolute;right:1.5vw;top:9vh;bottom:9vh;width:1px;background:rgba(255,255,255,.16);z-index:10}.bar{width:100%;height:0;background:linear-gradient(var(--accent),var(--off))}
+.loading{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#fff;transition:opacity .35s ease}.loadingInner{text-align:center;color:#111}.loadingLogo{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(46px,8vw,100px);letter-spacing:.16em}.loadingText{margin-top:12px;font-size:9px;letter-spacing:.22em;opacity:.64}
+@media(max-width:900px){
+ body{height:2900vh}.rail{display:none}.copy{max-width:86vw}.hint{left:4vw;right:auto;bottom:max(14px,env(safe-area-inset-bottom));font-size:7px}.tagline{font-size:12px}.portadaBadge{max-width:86vw}.brandSub{display:none}
+}
+</style>
+</head>
+<body>
+<section class="stage">
+<canvas id="canvas"></canvas><div class="veil"></div>
+<div class="topbar" id="topbar"><div><div class="brand">KAIA</div><div class="brandSub">Residencial · Puebla</div></div><div class="count" id="count">01 / 06</div></div>
+<div class="portadaBadge" id="portadaBadge"><div class="portadaOver">KAIA RESIDENCIAL</div><div class="portadaTitle">NUEVO DESARROLLO EN PUEBLA</div><div class="portadaText">DESCUBRE TU NUEVO HOGAR.</div></div>
+<div class="copy" id="copy"><div class="kicker"></div><div class="eyebrow" id="eyebrow"></div><div class="title" id="title"></div><div class="tagline" id="tagline"></div></div>
+<div class="hint" id="hint">scroll para recorrer ↓</div><div class="rail"><div class="bar" id="bar"></div></div>
+<div class="loading" id="loading"><div class="loadingInner"><div class="loadingLogo">KAIA</div><div class="loadingText" id="loadingText">PREPARANDO EXPERIENCIA…</div></div></div>
+</section>
+<script>
+const scenes=[{"slug":"01_portada","title":"KAIA RESIDENCIAL","sub":"NUEVO DESARROLLO EN PUEBLA","tag":"DESCUBRE TU NUEVO HOGAR.","fit":"contain","bg":"white","start":0.0,"end":0.12666666666666665,"countDesktop":141,"countMobile":94},{"slug":"02_exterior_01","title":"EXTERIOR","sub":"VISTA DESDE LA CALLE","tag":"Una llegada limpia, elegante y actual.","fit":"cover","bg":"black","start":0.12666666666666665,"end":0.2533333333333333,"countDesktop":120,"countMobile":80},{"slug":"03_exterior_02","title":"EXTERIOR","sub":"SEGUNDA VISTA","tag":"Presencia arquitectónica desde la ciudad.","fit":"cover","bg":"black","start":0.2533333333333333,"end":0.38666666666666666,"countDesktop":144,"countMobile":96},{"slug":"04_calle_interior","title":"RECORRIDO","sub":"CALLE INTERIOR","tag":"Un conjunto pensado para conectar espacios y vida cotidiana.","fit":"cover","bg":"black","start":0.38666666666666666,"end":0.6933333333333332,"countDesktop":768,"countMobile":512},{"slug":"05_sala","title":"SALA · COMEDOR","sub":"INTERIOR DEPARTAMENTO","tag":"Interiores amplios para compartir, vivir y recibir.","fit":"cover","bg":"black","start":0.6933333333333332,"end":0.8466666666666666,"countDesktop":240,"countMobile":160},{"slug":"06_recamara","title":"RECÁMARA","sub":"INTERIOR DEPARTAMENTO","tag":"Calma, luz natural y descanso.","fit":"cover","bg":"black","start":0.8466666666666666,"end":1.0,"countDesktop":240,"countMobile":160}];
+
+const isMobile=matchMedia('(pointer: coarse)').matches||innerWidth<=900;
+const frameRoot=isMobile?'frames-mobile-lite':'frames';
+const frameExt=isMobile?'webp':'jpg';
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d',{alpha:false});
+const topbar=document.getElementById('topbar'),countEl=document.getElementById('count'),bar=document.getElementById('bar'),hint=document.getElementById('hint'),copy=document.getElementById('copy'),badge=document.getElementById('portadaBadge'),eyebrow=document.getElementById('eyebrow'),title=document.getElementById('title'),tagline=document.getElementById('tagline'),loading=document.getElementById('loading'),loadingText=document.getElementById('loadingText');
+
+let target=0,smooth=0,currentScene=-1,lastKey='',direction=1;
+let lastTarget=0,lastScrollT=performance.now(),scrollVelocity=0;
+let activeLoads=0;
+const maxLoads=isMobile?4:7;
+const cache=new Map(),queued=new Set(),inflight=new Set();
+let queue=[];
+
+function viewSize(){const v=window.visualViewport;return{w:Math.round(v?v.width:innerWidth),h:Math.round(v?v.height:innerHeight)}}
+function setViewport(){const{w,h}=viewSize();document.documentElement.style.setProperty('--app-height',h+'px');const dpr=Math.min(devicePixelRatio||1,isMobile?1:2);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px'}
+function progress(){const max=document.documentElement.scrollHeight-innerHeight;return max>0?Math.max(0,Math.min(1,scrollY/max)):0}
+function updateTarget(){
+  const now=performance.now(),next=progress(),dt=Math.max(16,now-lastScrollT),delta=next-lastTarget;
+  if(Math.abs(delta)>.000001)direction=delta>0?1:-1;
+  const instantaneous=Math.abs(delta)/(dt/1000);
+  scrollVelocity=scrollVelocity*.66+instantaneous*.34;
+  target=next;lastTarget=next;lastScrollT=now;
+}
+addEventListener('scroll',updateTarget,{passive:true});
+addEventListener('resize',()=>{setViewport();updateTarget()},{passive:true});
+addEventListener('orientationchange',()=>setTimeout(setViewport,120));
+if(window.visualViewport)window.visualViewport.addEventListener('resize',setViewport,{passive:true});
+
+function idxFor(p){for(let i=0;i<scenes.length;i++)if(p<=scenes[i].end)return i;return scenes.length-1}
+function frameCount(s){return isMobile?s.countMobile:s.countDesktop}
+function infoFor(p){const i=idxFor(p),s=scenes[i],local=Math.max(0,Math.min(1,(p-s.start)/(s.end-s.start))),count=frameCount(s),frame=Math.max(1,Math.min(count,Math.round(1+local*(count-1))));return{i,s,frame,count,local}}
+function keyFor(s,f){return s.slug+':'+f}
+function url(s,f){return `${frameRoot}/${s.slug}/frame_${String(f).padStart(5,'0')}.${frameExt}`}
+
+function touchCache(k){const im=cache.get(k);if(!im)return null;cache.delete(k);cache.set(k,im);return im}
+function trimCache(){
+  const limit=isMobile?72:300;
+  while(cache.size>limit){const k=cache.keys().next().value;cache.delete(k)}
+}
+function enqueue(s,f,count,priority=50){
+  f=Math.max(1,Math.min(count,Math.round(f)));const k=keyFor(s,f);
+  if(cache.has(k)||queued.has(k)||inflight.has(k))return;
+  queued.add(k);queue.push({s,f,count,k,priority});
+}
+function pump(){
+  if(activeLoads>=maxLoads||queue.length===0)return;
+  queue.sort((a,b)=>a.priority-b.priority);
+  while(activeLoads<maxLoads&&queue.length){
+    const item=queue.shift();queued.delete(item.k);
+    if(cache.has(item.k)||inflight.has(item.k))continue;
+    activeLoads++;inflight.add(item.k);
+    const im=new Image();im.decoding='async';
+    try{im.fetchPriority=item.priority<=3?'high':'auto'}catch(e){}
+    const done=()=>{activeLoads--;inflight.delete(item.k);pump()};
+    im.onload=()=>{cache.set(item.k,im);trimCache();done()};
+    im.onerror=done;im.src=url(item.s,item.f);
+  }
+}
+function pruneQueue(info){
+  // Fast scroll makes old requests obsolete. Keep current scene and adjacent scene requests.
+  if(queue.length<120)return;
+  const allowed=new Set([info.s.slug]);
+  if(info.i+direction>=0&&info.i+direction<scenes.length)allowed.add(scenes[info.i+direction].slug);
+  queue=queue.filter(x=>{if(allowed.has(x.s.slug)||x.priority>=80)return true;queued.delete(x.k);return false});
+}
+
+function draw(im,s){
+  const cw=canvas.width,ch=canvas.height,iw=im.naturalWidth,ih=im.naturalHeight;
+  ctx.fillStyle=s.bg==='white'?'#fff':'#000';ctx.fillRect(0,0,cw,ch);
+  const scale=s.fit==='contain'?Math.min(cw/iw,ch/ih):Math.max(cw/iw,ch/ih),w=iw*scale,h=ih*scale;
+  ctx.drawImage(im,(cw-w)/2,(ch-h)/2,w,h);
+}
+function updateScene(i){
+  if(i===currentScene)return;currentScene=i;const s=scenes[i];
+  countEl.textContent=String(i+1).padStart(2,'0')+' / '+String(scenes.length).padStart(2,'0');
+  eyebrow.textContent=s.sub;title.textContent=s.title;tagline.textContent=s.tag;
+  // Intentionally static: no fade, translate or text animation.
+}
+function overlays(p){const onLight=p<scenes[0].end;topbar.classList.toggle('on-light',onLight);hint.classList.toggle('on-light',onLight);badge.style.display=onLight?'block':'none';copy.style.display=onLight?'none':'block'}
+
+function nearestLoaded(info,radius){
+  const exact=keyFor(info.s,info.frame),direct=touchCache(exact);if(direct)return{im:direct,key:exact};
+  // Prefer the direction of travel, then look behind. This avoids visible freezes.
+  for(let d=1;d<=radius;d++){
+    const a=info.frame+(direction*d),b=info.frame-(direction*d);
+    if(a>=1&&a<=info.count){const ka=keyFor(info.s,a),ia=touchCache(ka);if(ia)return{im:ia,key:ka}}
+    if(b>=1&&b<=info.count){const kb=keyFor(info.s,b),ib=touchCache(kb);if(ib)return{im:ib,key:kb}}
+  }
+  return null;
+}
+
+function predictivePreload(info){
+  const gap=Math.abs(target-smooth);
+  const fast=gap>(isMobile?.012:.008)||scrollVelocity>.16;
+  const veryFast=gap>(isMobile?.03:.022)||scrollVelocity>.38;
+  const ahead=isMobile?(veryFast?28:fast?20:12):(veryFast?86:fast?54:28);
+  const behind=isMobile?(fast?2:5):(fast?4:9);
+  const stride=veryFast?(isMobile?2:3):1;
+
+  enqueue(info.s,info.frame,info.count,0);
+  enqueue(info.s,info.frame+direction,info.count,1);
+  enqueue(info.s,info.frame+direction*2,info.count,1);
+  enqueue(info.s,info.frame-direction,info.count,4);
+
+  // Dense short buffer where the eye can actually perceive individual frames.
+  const dense=isMobile?8:14;
+  for(let d=3;d<=dense;d++)enqueue(info.s,info.frame+direction*d,info.count,2+d*.05);
+  for(let d=2;d<=behind;d++)enqueue(info.s,info.frame-direction*d,info.count,12+d);
+
+  // Predictive sparse buffer farther ahead for fast wheel/touch movement.
+  for(let d=dense+stride;d<=ahead;d+=stride)enqueue(info.s,info.frame+direction*d,info.count,20+d*.05);
+
+  // Anchor frames far ahead mean a large scroll jump still has something nearby to draw.
+  if(fast){
+    const jumps=isMobile?[14,22,32]:[20,32,48,68,88];
+    jumps.forEach((d,j)=>enqueue(info.s,info.frame+direction*d,info.count,6+j));
+  }
+
+  // Prepare entry into the next/previous scene according to direction.
+  const ni=info.i+direction;
+  if(ni>=0&&ni<scenes.length){const ns=scenes[ni],cnt=frameCount(ns);if(direction>0){for(let f=1;f<=10;f++)enqueue(ns,f,cnt,35+f)}else{for(let f=cnt;f>cnt-10;f--)enqueue(ns,f,cnt,35+(cnt-f))}}
+  pruneQueue(info);pump();
+}
+
+function adaptiveAlpha(){
+  const gap=Math.abs(target-smooth);
+  if(isMobile){
+    if(gap>.035||scrollVelocity>.42)return .42;
+    if(gap>.018||scrollVelocity>.22)return .28;
+    if(gap>.007)return .18;
+    return .105;
+  }
+  if(gap>.030||scrollVelocity>.42)return .46;
+  if(gap>.015||scrollVelocity>.22)return .30;
+  if(gap>.006)return .17;
+  return .075;
+}
+
+function tick(){
+  // Velocity decays when the wheel/finger stops moving.
+  scrollVelocity*=.94;
+  const alpha=adaptiveAlpha();smooth+=(target-smooth)*alpha;
+  if(Math.abs(target-smooth)<.000015)smooth=target;
+
+  const info=infoFor(smooth);updateScene(info.i);predictivePreload(info);
+  const fast=Math.abs(target-smooth)>(isMobile?.012:.008)||scrollVelocity>.16;
+  const radius=isMobile?(fast?14:6):(fast?34:10);
+  const available=nearestLoaded(info,radius);
+  if(available&&available.key!==lastKey){draw(available.im,info.s);lastKey=available.key}
+  overlays(smooth);bar.style.height=(smooth*100).toFixed(2)+'%';requestAnimationFrame(tick);
+}
+
+function backgroundAnchors(){
+  // A sparse map of the whole experience is loaded at low priority on desktop.
+  // It dramatically improves large/fast scroll jumps without loading every frame.
+  if(isMobile){
+    const i=idxFor(target),range=[i,Math.min(i+1,scenes.length-1)];
+    [...new Set(range)].forEach(si=>{const s=scenes[si],cnt=frameCount(s),step=Math.max(12,Math.round(cnt/14));for(let f=1;f<=cnt;f+=step)enqueue(s,f,cnt,90)});
+  }else{
+    scenes.forEach(s=>{const cnt=frameCount(s),step=Math.max(18,Math.round(cnt/18));for(let f=1;f<=cnt;f+=step)enqueue(s,f,cnt,95)});
+  }
+  pump();
+}
+
+function boot(){
+  setViewport();updateTarget();const s=scenes[0],cnt=frameCount(s),n=Math.min(isMobile?10:24,cnt);let ready=0;
+  for(let f=1;f<=n;f++){
+    const k=keyFor(s,f);if(cache.has(k))continue;
+    const im=new Image();im.decoding='async';
+    im.onload=()=>{cache.set(k,im);ready++;loadingText.textContent='PREPARANDO EXPERIENCIA… '+Math.round(ready/n*100)+'%';if(ready>=Math.min(isMobile?4:8,n)){loading.style.opacity='0';setTimeout(()=>loading.style.display='none',380)}};
+    im.src=url(s,f);
+  }
+  tick();
+  setTimeout(backgroundAnchors,isMobile?900:500);
+}
+boot();
+</script></body></html>
